@@ -5,6 +5,16 @@ import { OrbitControls, useGLTF, useAnimations, Environment, ContactShadows } fr
 import { Suspense, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
+// Suppress THREE.Clock deprecation warning emitted by @react-three/fiber internals.
+// THREE.Clock was deprecated in three r168; fiber has not yet migrated to THREE.Timer.
+if (typeof window !== 'undefined') {
+  const _warn = console.warn.bind(console);
+  console.warn = (...args: Parameters<typeof console.warn>) => {
+    if (typeof args[0] === 'string' && args[0].includes('THREE.Clock')) return;
+    _warn(...args);
+  };
+}
+
 function Model({ url }: { url: string }) {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(url);
