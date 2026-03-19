@@ -89,28 +89,28 @@ function Model({ url }: { url: string }) {
         if (mesh.material) {
           const material = mesh.material as THREE.MeshStandardMaterial;
           
-          // Make red materials emit bright light with texture
+          // Keep bright surfaces blue but darker and less neon
           if (material.color && (material.color.r > 0.5)) {
-            material.emissive = new THREE.Color(0xff0000);
-            material.emissiveIntensity = 0.9;
+            material.emissive = new THREE.Color(0x2563eb);
+            material.emissiveIntensity = 0.75;
             material.metalness = 0.95;
-            material.roughness = 0.15;
+            material.roughness = 0.2;
             
             // Add subtle texture to red parts
             if (noiseTexture) {
               material.roughnessMap = noiseTexture;
             }
             
-            // Add environmental reflections
-            material.envMapIntensity = 1.5;
+            // Keep reflections present but controlled
+            material.envMapIntensity = 1.35;
           }
           
           // Make black materials more reflective with brushed texture
           if (material.color && (material.color.r < 0.2 && material.color.g < 0.2 && material.color.b < 0.2)) {
             material.metalness = 1;
-            material.roughness = 0.2;
-            material.emissive = new THREE.Color(0x330000);
-            material.emissiveIntensity = 0.3;
+            material.roughness = 0.24;
+            material.emissive = new THREE.Color(0x0f1f4a);
+            material.emissiveIntensity = 0.25;
             
             // Add brushed metal texture to dark parts
             if (brushedTexture) {
@@ -118,8 +118,8 @@ function Model({ url }: { url: string }) {
               material.metalnessMap = brushedTexture;
             }
             
-            // Enhanced reflections for metal
-            material.envMapIntensity = 2.0;
+            // Darker, subtler metal reflections
+            material.envMapIntensity = 1.6;
             
             // Add normal map for depth
             if (noiseTexture) {
@@ -140,9 +140,9 @@ function Model({ url }: { url: string }) {
           action.reset().play();
         }
       });
-      console.log('Playing animations:', Object.keys(actions));
+      // console.log('Playing animations:', Object.keys(actions));
     } else {
-      console.log('No animations found in the model');
+      // console.log('No animations found in the model');
     }
   }, [actions, scene]);
 
@@ -170,7 +170,7 @@ function Model({ url }: { url: string }) {
 function Loader() {
   return (
     <div className="flex items-center justify-center h-full">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-red-600"></div>
+      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-600"></div>
     </div>
   );
 }
@@ -185,36 +185,36 @@ export default function Model3D({ modelPath }: { modelPath: string }) {
       gl={{ 
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.5,
+        toneMappingExposure: 1.15,
       }}
     >
       <Suspense fallback={null}>
         {/* Enhanced Lighting for glowing interior */}
-        <ambientLight intensity={0.3} />
+        <ambientLight intensity={0.26} color="#cbd5e1" />
         
         {/* Key lights for dramatic effect */}
-        {/* <directionalLight position={[10, 10, 5]} intensity={0.8} color="#ffffff" castShadow />
-        <directionalLight position={[-10, -10, -5]} intensity={0.6} color="#ff3333" /> */}
+        <directionalLight position={[10, 10, 5]} intensity={0.55} color="#e2e8f0" castShadow />
+        <directionalLight position={[-10, -10, -5]} intensity={0.42} color="#1d4ed8" />
         
         {/* Rim lighting for edge glow */}
-        {/* <spotLight position={[5, 0, 0]} angle={0.5} penumbra={1} intensity={1.2} color="#ff0000" />
-        <spotLight position={[-5, 0, 0]} angle={0.5} penumbra={1} intensity={1.2} color="#ff0000" />
-        <spotLight position={[0, 5, 0]} angle={0.5} penumbra={1} intensity={1} color="#ff3333" />
-        <spotLight position={[0, -5, 0]} angle={0.5} penumbra={1} intensity={1} color="#ff3333" /> */}
+        <spotLight position={[5, 0, 0]} angle={0.5} penumbra={1} intensity={0.5} color="#0ea5e9" />
+        <spotLight position={[-5, 0, 0]} angle={0.5} penumbra={1} intensity={0.5} color="#2563eb" />
+        <spotLight position={[0, 5, 0]} angle={0.5} penumbra={1} intensity={0.35} color="#38bdf8" />
+        <spotLight position={[0, -5, 0]} angle={0.5} penumbra={1} intensity={0.35} color="#3b82f6" />
         
         {/* HDR Environment for realistic reflections */}
-        <Environment preset="night" environmentIntensity={0.4} />
+        <Environment preset="night" environmentIntensity={0.35} />
         
         <Model url={modelPath} />
         
         {/* Subtle ground shadow */}
         <ContactShadows 
           position={[0, -3, 0]} 
-          opacity={0.7} 
+          opacity={0.5} 
           scale={10} 
           blur={2.5} 
           far={4}
-          color="#ff0000"
+          color="#1e3a8a"
         />
       </Suspense>
       
